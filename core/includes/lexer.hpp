@@ -1,6 +1,6 @@
 // lexer.hpp
 
-#pragma once;
+#pragma once
 
 #include <string>
 #include <unordered_map>
@@ -33,7 +33,7 @@ struct Token {
     TokenType type;
 };
 
-Token createToken(const std::string& value = "", TokenType type);
+Token createToken(const std::string& value, TokenType type);
 bool isAlpha(const std::string& src);
 bool isSkippable(char ch);
 bool isInt(char ch);
