@@ -1,10 +1,15 @@
+// lexer.hpp
+
 #pragma once;
 
 #include <string>
-#include <map>
+#include <unordered_map>
+#include <vector>
+#include <cctype> 
+#include <iostream>
 
 enum TokenType {
-    Integer,
+    Number,
     Identifier,
     Let,
     Const,
@@ -18,7 +23,7 @@ enum TokenType {
     _EOF,
 };
 
-const std::map<std::string, TokenType> KEYWORDS {
+const std::unordered_map<std::string, TokenType> KEYWORDS {
     { "let", TokenType::Let },
     { "const", TokenType::Const }
 };
@@ -32,3 +37,4 @@ Token createToken(const std::string& value = "", TokenType type);
 bool isAlpha(const std::string& src);
 bool isSkippable(char ch);
 bool isInt(char ch);
+std::vector<Token> Tokenize(const std::string& sourceCode);
