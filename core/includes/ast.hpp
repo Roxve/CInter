@@ -8,6 +8,11 @@ enum class NodeType {
     Program,
     NumericLiteral,
     Identifier,
+    VariableDeclaration,
+    BinaryExpression,
+    AssignmentExpression,
+    Property,
+    ObjectLiteral
 };
 
 struct Statement {
@@ -41,5 +46,52 @@ struct NumericLiteral : public Expression {
 
     NumericLiteral() {
         kind = NodeType::NumericLiteral;
+    }
+};
+
+struct VariableDeclaration : public Statement {
+    bool constant;
+    std::string identifier;
+    Expression value;
+
+    VariableDeclaration() {
+        kind = NodeType::VariableDeclaration;
+    }
+};
+
+struct AssignmentExpression : public Expression {
+    Expression assignee;
+    Expression value;
+
+    AssignmentExpression() {
+        kind = NodeType::AssignmentExpression;
+    }
+};
+
+struct BinaryExpression : public Expression {
+    Expression left;
+    Expression right;
+
+    std::string _operator;
+
+    BinaryExpression() {
+        kind = NodeType::BinaryExpression;
+    }
+};
+
+struct Property : public Expression {
+    std::string key;
+    Expression value;
+
+    Property() {
+        kind = NodeType::Property;
+    }
+};
+
+struct ObjectLiteral : public Expression {
+    std::vector<Property> properties;
+
+    ObjectLiteral() {
+        kind = NodeType::ObjectLiteral;
     }
 };
