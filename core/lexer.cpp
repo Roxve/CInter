@@ -32,26 +32,32 @@ std::vector<Token> Tokenize(const std::string& sourceCode) {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::OpenParen));
             src.erase(src.begin());
         }
+        
         else if (src[0] == ')') {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::CloseParen));
             src.erase(src.begin());
         }
+
         else if (src[0] == '+' || src[0] == '-' || src[0] == '*' || src[0] == '/' || src[0] == '%') {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::BinaryOperator));
             src.erase(src.begin());
         }
+
         else if (src[0] == '=') {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::Equals));
             src.erase(src.begin());
         }
+
         else if (src[0] == ';') {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::Semicolon));
             src.erase(src.begin());
         }
+
         else if (src[0] == ':') {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::Colon));
             src.erase(src.begin());
         }
+
         else if (src[0] == ',') {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::Comma));
             src.erase(src.begin());
@@ -65,6 +71,7 @@ std::vector<Token> Tokenize(const std::string& sourceCode) {
                 }
                 tokens.push_back(createToken(num, TokenType::Number));
             }
+
             else if (isalpha(src[0])) {
                 std::string ident;
                 while (!src.empty() && isalpha(src[0])) {
@@ -79,9 +86,11 @@ std::vector<Token> Tokenize(const std::string& sourceCode) {
                     tokens.push_back(createToken(ident, TokenType::Identifier));
                 }
             }
+
             else if (isSkippable(src[0])) {
                 src.erase(src.begin());
             }
+
             else {
                 std::cerr << "Unrecognized character found in source: " << static_cast<int>(src[0]) << " (" << src[0] << ")" << std::endl;
                 exit(1);  
