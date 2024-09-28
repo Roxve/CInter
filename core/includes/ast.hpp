@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <string_view>
 
 enum class NodeType {
     Program,
@@ -18,17 +19,17 @@ enum class NodeType {
 struct Statement {
     NodeType kind;
 
-    virtual ~Statement() noexcept = default; 
+    virtual ~Statement() noexcept = default;
 };
 
 struct Program : public Statement {
-    std::vector<Statement*> body;
+    std::vector<std::unique_ptr<Statement>> body;
 
     Program() {
-        kind = NodeType::Program; 
+        kind = NodeType::Program;
     }
 
-    ~Program() noexcept override = default; 
+    ~Program() noexcept override = default;
 };
 
 struct Expression : public Statement {};
@@ -52,7 +53,7 @@ struct NumericLiteral : public Expression {
 struct VariableDeclaration : public Statement {
     bool constant;
     std::string identifier;
-    Expression value;
+    std::unique_ptr<Expression> value;
 
     VariableDeclaration() {
         kind = NodeType::VariableDeclaration;
@@ -60,8 +61,8 @@ struct VariableDeclaration : public Statement {
 };
 
 struct AssignmentExpression : public Expression {
-    Expression assignee;
-    Expression value;
+    std::unique_ptr<Expression> assignee;
+    std::unique_ptr<Expression> value;
 
     AssignmentExpression() {
         kind = NodeType::AssignmentExpression;
@@ -69,9 +70,8 @@ struct AssignmentExpression : public Expression {
 };
 
 struct BinaryExpression : public Expression {
-    Expression left;
-    Expression right;
-
+    std::unique_ptr<Expression> left;
+    std::unique_ptr<Expression> right;
     std::string _operator;
 
     BinaryExpression() {
@@ -81,7 +81,7 @@ struct BinaryExpression : public Expression {
 
 struct Property : public Expression {
     std::string key;
-    Expression value;
+    std::unique_ptr<Expression> value;
 
     Property() {
         kind = NodeType::Property;
