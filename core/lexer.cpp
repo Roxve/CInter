@@ -15,96 +15,106 @@ bool isAlpha(const std::string& src) {
     return true;
 }
 
-bool isSkippable(char ch) {
+inline bool isSkippable(char ch) {
     return ch == ' ' || ch == '\n' || ch == '\t' || ch == '\r';
 }
 
-bool isInt(char ch) {
-    return std::isdigit(static_cast<unsigned char>(ch)); 
+inline bool isInt(char ch) {
+    return std::isdigit(static_cast<unsigned char>(ch));
 }
 
-std::vector<Token> Tokenize(const std::string& sourceCode) {
+std::vector<Token> Tokenize(const std::string &sourceCode) {
     std::vector<Token> tokens;
-    std::vector<char> src(sourceCode.begin(), sourceCode.end());
+    tokens.reserve(sourceCode.size() / 2); 
 
-    while (!src.empty()) {
-        if (src[0] == '(') {
-            tokens.push_back(createToken(std::string(1, src[0]), TokenType::OpenParen));
-            src.erase(src.begin());
-        }
+    auto it = sourceCode.begin();
+    auto end = sourceCode.end();
 
-        else if (src[0] == ')') {
-            tokens.push_back(createToken(std::string(1, src[0]), TokenType::CloseParen));
-            src.erase(src.begin());
-        }
+    while (it != end) {
+        char ch = *it;
 
-        else if (src[0] == '+' || src[0] == '-' || src[0] == '*' || src[0] == '/' || src[0] == '%') {
-            tokens.push_back(createToken(std::string(1, src[0]), TokenType::BinaryOperator));
-            src.erase(src.begin());
-        }
+        switch (ch) {
+            case '(':
+                tokens.push_back({ "(", TokenType::OpenParen });
+                ++it;
+                break;
 
-        else if (src[0] == '=') {
-            tokens.push_back(createToken(std::string(1, src[0]), TokenType::Equals));
-            src.erase(src.begin());
-        }
+            case ')':
+                tokens.push_back({ ")", TokenType::CloseParen });
+                ++it;
+                break;
 
-        else if (src[0] == ';') {
-            tokens.push_back(createToken(std::string(1, src[0]), TokenType::Semicolon));
-            src.erase(src.begin());
-        }
+            case '+':
+            case '-':
+            case '*':
+            case '/':
+            case '%':
+                tokens.push_back({ std::string(1, ch), TokenType::BinaryOperator });
+                ++it;
+                break;
 
-        else if (src[0] == ':') {
-            tokens.push_back(createToken(std::string(1, src[0]), TokenType::Colon));
-            src.erase(src.begin());
-        }
+            case '=':
+                tokens.push_back({"=", TokenType::Equals});
+                ++it;
+                break;
 
-        else if (src[0] == ',') {
-            tokens.push_back(createToken(std::string(1, src[0]), TokenType::Comma));
-            src.erase(src.begin());
-        }
+            case ';':
+                tokens.push_back({";", TokenType::Semicolon});
+                ++it;
+                break;
 
-        else {
-            if (isInt(src[0])) {
-                std::string num;
-        
-                while (!src.empty() && isInt(src[0])) {
-                    num += src[0];
-                    src.erase(src.begin());
-                }
-        
-                tokens.push_back(createToken(num, TokenType::Number));
-            }
+            case ':':
+                tokens.push_back({":", TokenType::Colon});
+                ++it;
+                break;
 
-            else if (isalpha(src[0])) {
-                std::string ident;
-        
-                while (!src.empty() && isalpha(src[0])) {
-                    ident += src[0];
-                    src.erase(src.begin());
-                }
+            case ',':
+                tokens.push_back({",", TokenType::Comma});
+                ++it;
+                break;
 
-                if (KEYWORDS.find(ident) != KEYWORDS.end()) {
-                    tokens.push_back(createToken(ident, KEYWORDS.at(ident))); 
+            default:
+                if (isInt(ch)) {
+                    std::string num;
+
+                    while (it != end && isInt(*it)) {
+                        num += *it;
+                        ++it;
+                    }
+
+                    tokens.push_back({num, TokenType::Number});
                 } 
-        
+
+                else if (std::isalpha(static_cast<unsigned char>(ch))) {
+                    std::string ident;
+
+                    while (it != end && std::isalpha(static_cast<unsigned char>(*it))) {
+                        ident += *it;
+                        ++it;
+                    }
+
+                    auto keywordIt = KEYWORDS.find(ident);
+                    
+                    if (keywordIt != KEYWORDS.end()) 
+                        tokens.push_back({ident, keywordIt->second});
+                    
+                    else 
+                        tokens.push_back({ident, TokenType::Identifier});
+                    
+                } 
+                
+                else if (isSkippable(ch)) 
+                    ++it;  
+                
                 else {
-                    tokens.push_back(createToken(ident, TokenType::Identifier));
+                    std::cerr << "Unrecognized character found in source: " << static_cast<int>(ch) << " (" << ch << ")" << std::endl;
+                    exit(1);
                 }
-            }
 
-            else if (isSkippable(src[0])) {
-                src.erase(src.begin());
-            }
-
-            else {
-                std::cerr << "Unrecognized character found in source: " << static_cast<int>(src[0]) << " (" << src[0] << ")" << std::endl;
-        
-                exit(1);  
-            }
+                break;
         }
     }
 
-    tokens.push_back({ "EndOfFile", TokenType::_EOF });
-
+    tokens.push_back({"EndOfFile", TokenType::_EOF});
     return tokens;
 }

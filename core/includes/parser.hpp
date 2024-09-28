@@ -11,7 +11,6 @@ class Parser {
         Token at() const;
         Token eat();
         Token expect(TokenType type, std::string& err);
-        Statement parseStaement();
 
     public:
         Program produceAST(std::string& sourceCode);
