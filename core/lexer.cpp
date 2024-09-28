@@ -32,7 +32,7 @@ std::vector<Token> Tokenize(const std::string& sourceCode) {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::OpenParen));
             src.erase(src.begin());
         }
-        
+
         else if (src[0] == ')') {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::CloseParen));
             src.erase(src.begin());
@@ -62,18 +62,22 @@ std::vector<Token> Tokenize(const std::string& sourceCode) {
             tokens.push_back(createToken(std::string(1, src[0]), TokenType::Comma));
             src.erase(src.begin());
         }
+
         else {
             if (isInt(src[0])) {
                 std::string num;
+        
                 while (!src.empty() && isInt(src[0])) {
                     num += src[0];
                     src.erase(src.begin());
                 }
+        
                 tokens.push_back(createToken(num, TokenType::Number));
             }
 
             else if (isalpha(src[0])) {
                 std::string ident;
+        
                 while (!src.empty() && isalpha(src[0])) {
                     ident += src[0];
                     src.erase(src.begin());
@@ -82,6 +86,7 @@ std::vector<Token> Tokenize(const std::string& sourceCode) {
                 if (KEYWORDS.find(ident) != KEYWORDS.end()) {
                     tokens.push_back(createToken(ident, KEYWORDS.at(ident))); 
                 } 
+        
                 else {
                     tokens.push_back(createToken(ident, TokenType::Identifier));
                 }
@@ -93,6 +98,7 @@ std::vector<Token> Tokenize(const std::string& sourceCode) {
 
             else {
                 std::cerr << "Unrecognized character found in source: " << static_cast<int>(src[0]) << " (" << src[0] << ")" << std::endl;
+        
                 exit(1);  
             }
         }
